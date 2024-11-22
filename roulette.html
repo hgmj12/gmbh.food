@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>룰렛</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: grid;
+            place-items: center;
+            /* 중앙 정렬 */
+            height: 100vh;
+            margin: 0;
+            font-family: 'Jua', Arial, sans-serif;
+            position: relative;
+        }
+        
+        .roulette-container {
+            display: grid;
+            grid-template-rows: auto auto;
+            /* 상단에 이미지, 하단에 텍스트 */
+            grid-template-areas: "image" "text";
+            /* 이미지가 텍스트 위에 오도록 설정 */
+            text-align: center;
+            font-size: 4em;
+            position: relative;
+        }
+        
+        .menu-image {
+            width: auto;
+            height: auto;
+            grid-area: image;
+            margin-bottom: 20px;
+            /* 이미지와 텍스트 간의 간격 조정 */
+            display: none;
+            /* 처음엔 숨김 */
+            justify-self: center;
+            /* 중앙 정렬 */
+            z-index: 1;
+            /* 이미지가 텍스트 위에 오도록 설정 */
+        }
+        
+        .result-container {
+            grid-area: text;
+        }
+        /* 버튼 그룹 전체를 고정 */
+        
+        .button-container {
+            position: fixed;
+            bottom: 60px;
+            /* 화면 하단에서 Npx 떨어진 위치 */
+            left: 0;
+            /* 왼쪽부터 시작 */
+            right: 0;
+            /* 오른쪽까지 채우기 */
+            display: flex;
+            /* Flexbox 사용 */
+            justify-content: center;
+            /* 가로 중앙 정렬 */
+            gap: 10px;
+            /* 버튼 간의 간격 설정 */
+        }
+        /* 각 버튼 스타일 */
+        
+        .retry-button,
+        .back-button {
+            font-size: 0.7em;
+            padding: 5px 10px;
+            background-color: #443f3f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Jua', Arial, sans-serif;
+            cursor: pointer;
+        }
+        /* 버튼 hover 효과 */
+        
+        .retry-button:hover,
+        .back-button:hover {
+            background-color: #45a049;
+        }
+        /*
+        .retry-button,
+        .back-button {
+            margin-top: 20px;
+            font-size: 0.7em;
+            padding: 5px 10px;
+            background-color: #443f3f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Jua', Arial, sans-serif;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .retry-button:hover,
+        .back-button:hover {
+            background-color: #45a049;
+        }*/
+    </style>
+</head>
+
+<body>
+    <div class="roulette-container">
+        당첨된 메뉴는...
+        <div id="result" class="result"></div>
+        <img id="menu-image" class="menu-image" src="" alt="메뉴 이미지">
+        <div class="button-container">
+            <button class="back-button" onclick="goBack()">돌아가기</button>
+            <button class="retry-button" onclick="displayResult()">다시 돌리기</button>
+        </div>
+    </div>
+    <script>
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+        const urlParams = new URLSearchParams(window.location.search);
+        const country = urlParams.get('country');
+
+        let rouletteItems = [];
+        let images = {};
+        switch (country) {
+            case 'kr':
+                rouletteItems = ['비빔밥', '불고기', '떡국', '김치찌개', '돼지 김치찜', '뻥튀기', '곱창', '대창', '1A++ 한우', '돼지고기', '양념 치킨', '감자 핫도그', '흰밥', '오곡밥', '장국밥', '김밥', '콩죽', '팥죽', '잣죽', '호박죽', '장국죽', '전복죽', '흑임자죽', '국수장국', '해물칼국수', '콩국수', '물냉면', '비빔냉면', '만둣국', '편수', '어만두', '떡국', '북엇국', '조개탕', '미역국', '무맑은장국', '갈비탕', '설렁탕', '삼계탕', '육개장']; //한식
+                images = {
+                    '비빔밥': '음식 사진/비빔밥.jfif',
+                    '불고기': '음식 사진/불고기.jfif',
+                    '떡국': '음식 사진/떡국.jfif',
+                    '김치찌개': '음식 사진/김치찌개.jfif',
+                    '돼지 김치찜': '음식 사진/돼지 김치찜.jfif',
+                    '뻥튀기': '음식 사진/뻥튀기.jfif',
+                    '곱창': '음식 사진/곱창.jfif',
+                    '대창': '음식 사진/대창.jfif',
+                    '1A++ 한우': '음식 사진/1A++ 한우.jfif',
+                    '돼지고기': '음식 사진/돼지고기.jfif',
+                    '양념 치킨': '음식 사진/양념치킨.jfif',
+                    '감자 핫도그': '음식 사진/감자핫도그.jfif',
+                    '흰밥': '음식 사진/흰밥.jfif',
+                    '오곡밥': '음식 사진/오곡밥.jfif',
+                    '장국밥': '음식 사진/장국밥.jfif',
+                    '김밥': '음식 사진/김밥.jfif',
+                    '콩죽': '음식 사진/콩죽.jfif',
+                    '팥죽': '음식 사진/팥죽.jpg',
+                    '잣죽': '음식 사진/잣죽.jfif',
+                    '호박죽': '음식 사진/호박죽.jfif',
+                    '장국죽': '음식 사진/장국죽.jfif',
+                    '전복죽': '음식 사진/전복죽.jfif',
+                    '흑임자죽': '음식 사진/흑임자죽.jfif',
+                    '국수장국': '음식 사진/국수장국.jfif',
+                    '해물칼국수': '음식 사진/해물칼국수.jfif',
+                    '콩국수': '음식 사진/콩국수.jfif',
+                    '물냉면': '음식 사진/물냉면.jfif',
+                    '비빔냉면': '음식 사진/비빔냉면.jfif',
+                    '만둣국': '음식 사진/만둣국.jfif',
+                    '편수': '음식 사진/편수.jfif',
+                    '어만두': '음식 사진/어만두.jfif',
+                    '떡국': '음식 사진/떡국.jfif',
+                    '북엇국': '음식 사진/북엇국.jfif',
+                    '조개탕': '음식 사진/조개탕.jfif',
+                    '미역국': '음식 사진/미역국.jfif',
+                    '무맑은장국': '음식 사진/무맑은장국.jfif',
+                    '갈비탕': '음식 사진/갈비탕.jfif',
+                    '설렁탕': '음식 사진/설렁탕.jfif',
+                    '삼계탕': '음식 사진/삼계탕.jfif',
+                    '육개장': '음식 사진/육개장.jfif'
+                };
+                break;
+            case 'jp':
+                rouletteItems = ['초밥', '우동', '라멘', '규동', '소바', '우동', '오코노미야키', '타코야키', '스키야키', '오니기리', '당고']; //일식
+                images = {
+                    '초밥': '음식 사진/초밥.jfif',
+                    '라면': '음식 사진/라면.jfif',
+                    '우동': '음식 사진/우동.jfif',
+                    '라멘': '음식 사진/라멘.jfif',
+                    '규동': '음식 사진/규동.jfif',
+                    '소바': '음식 사진/소바.jfif',
+                    '오코노미야키': '음식 사진/오코노미야키.jfif',
+                    '타코야키': '음식 사진/타코야키.jfif',
+                    '스키야키': '음식 사진/스키야키.jfif',
+                    '오니기리': '음식 사진/오니기리.jfif',
+                    '당고': '음식 사진/당고.jfif'
+                };
+                break;
+            case 'ch':
+                rouletteItems = ['짜장면', '짬뽕', '탕수육', '오리발', '땅콩 닭고기볶음', '샤브샤브', '마파두부', '가정식 두부볶음', '낙지 훈제', '부추 & 돼지고기 말이 튀김', '옥수수 & 잣 볶음', '구슬 감자튀김', "대나무 닭백숙"]; //중식
+                images = {
+                    '짜장면': '음식 사진/짜장면.jfif',
+                    '짬뽕': '음식 사진/짬뽕.jfif',
+                    '탕수육': '음식 사진/탕수육.jfif',
+                    '오리발': '음식 사진/오리발.jfif',
+                    '땅콩 닭고기볶음': '음식 사진/땅콩 닭고기볶음.jfif',
+                    '샤브샤브': '음식 사진/샤브샤브.jfif',
+                    '마파두부': '음식 사진/마파두부.jfif',
+                    '가정식 두부볶음': '음식 사진/가정식 두부볶음.jfif',
+                    '낙지 훈제': '음식 사진/낙지 훈제.jfif',
+                    '부추 & 돼지고기 말이 튀김': '음식 사진/부추&돼지고기 말이 튀김.jfif',
+                    '옥수수 & 잣 볶음': '음식 사진/옥수수&잣볶음.jfif',
+                    '구슬 감자튀김': '음식 사진/구슬 감자튀김.jfif',
+                    '대나무 닭백숙': '음식 사진/대나무 닭백숙.jfif'
+
+                };
+                break;
+            case 'us':
+                rouletteItems = ['버거', '스테이크', '샐러드', '키 라임 파이',  '샌프란시스코 사우도우 빵', '팟 로스트', '육포', '파히타', '바나나 스플릿', '스므스 필드 햄', '알래스카 야생언어', '미트로프', '랍스터 롤'];
+                images = {
+                    '버거': '음식 사진/버거.jfif',
+                    '스테이크': '음식 사진/스테이크.jfif',
+                    '샐러드': '음식 사진/샐러드.jfif',
+                    '키 라임 파이': '음식 사진/키 라임 파이.jfif',
+                    '모두 테이터': '음식 사진/모두 테이터.jfif',
+                    '샌프란시스코 사우도우 빵': '음식 사진/캘리포니아 샌프란시스코 사우도우빵.jfif',
+                    '팟 로스트': '음식 사진/팟로스트.jfif',
+                    '육포': '음식 사진/육포.jfif',
+                    '파히타': '음식 사진/파히타.jfif',
+                    '바나나 스플릿': '음식 사진/바나나 스플릿.jfif',
+                    '스므스 필드 햄': '음식 사진/스므스 필드 햄.jfif',
+                    '알래스카 야생언어': '음식 사진/알래스카 야생연어.jfif',
+                    '미트로프': '음식 사진/미트로프.jfif',
+                    '랍스터 롤': '음식 사진/랍스터 롤.jfif'
+                };
+                break;
+            default:
+                rouletteItems = ['항목1', '항목2', '항목3'];
+        }
+
+        function displayResult() {
+
+            const randomIndex = Math.floor(Math.random() * rouletteItems.length);
+            const selectedMenu = rouletteItems[randomIndex];
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = '당첨된 메뉴: ' + rouletteItems[randomIndex];
+
+            const menuImage = document.getElementById('menu-image')
+            menuImage.src = images[selectedMenu];
+            menuImage.style.display = 'block'; // 이미지 표시
+        }
+
+        // 페이지 로드 시 결과 표시
+        window.onload = displayResult;
+    </script>
+</body>
+
+</html>
